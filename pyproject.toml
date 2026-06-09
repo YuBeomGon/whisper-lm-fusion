@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "stt-wrapper"
+version = "0.1.0"
+description = "Generic faster-whisper-style STT wrapper over (patched) CTranslate2 Whisper with optional KenLM BPE fusion"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Beomgon Yu", email = "beomgon.yu@gmail.com" }]
+keywords = ["whisper", "stt", "asr", "ctranslate2", "kenlm", "speech-recognition"]
+# Core deps are backend-agnostic. Each backend pulls its own runtime via extras.
+dependencies = [
+  "numpy",
+  "transformers",
+]
+
+[project.optional-dependencies]
+# CTranslate2 backend (plain STT). KenLM fusion needs the *patched* CTranslate2
+# fork, built from source — not PyPI:
+#   github.com/YuBeomGon/CTranslate2  branch feature/kenlm-bpe-fusion
+# (see README "KenLM fusion"). The KenLM .binary is produced by the pipeline.
+ct2 = ["ctranslate2>=4.0"]
+dev = ["pytest", "ruff"]
+
+[project.urls]
+Homepage = "https://github.com/YuBeomGon/stt-wrapper"
+Documentation = "https://github.com/YuBeomGon/stt-wrapper/tree/main/docs"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+stt_wrapper = ["py.typed"]
+
+[tool.ruff]
+line-length = 100
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+.env
+
+# Test / cache
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Models / audio / LM artifacts — never commit these (design.md §3)
+*.bin
+*.binary
+*.meta.json
+.cache/
+models/
+*.wav
+*.flac
+*.mp3
+*.npy
