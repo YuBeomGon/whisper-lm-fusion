@@ -16,7 +16,7 @@ from typing import Sequence
 
 import numpy as np
 
-from stt_wrapper.config import DecodeOptions
+from whisper_lm_fusion.config import DecodeOptions
 
 
 def compression_ratio(text: str) -> float:

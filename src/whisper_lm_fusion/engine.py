@@ -1,8 +1,8 @@
 """Engine: ``load()`` once, ``transcribe()`` per request.
 
 The long-form decoding policy lives here (window loop + the four base-logic
-units in ``stt_wrapper._decode``) and is backend-agnostic. Model execution is
-delegated to a :class:`~stt_wrapper.backends.base.Backend` chosen by the factory,
+units in ``whisper_lm_fusion._decode``) and is backend-agnostic. Model execution is
+delegated to a :class:`~whisper_lm_fusion.backends.base.Backend` chosen by the factory,
 so CTranslate2, TensorRT-LLM, HuggingFace/OpenAI Whisper, etc. are swappable.
 """
 
@@ -13,11 +13,11 @@ from typing import Any
 
 import numpy as np
 
-from stt_wrapper import _decode
-from stt_wrapper.backends import Backend, create_backend
-from stt_wrapper.config import DecodeOptions, FusionOptions, LoadConfig
-from stt_wrapper.metadata import load_metadata, verify_metadata
-from stt_wrapper.results import Segment, TranscriptionResult
+from whisper_lm_fusion import _decode
+from whisper_lm_fusion.backends import Backend, create_backend
+from whisper_lm_fusion.config import DecodeOptions, FusionOptions, LoadConfig
+from whisper_lm_fusion.metadata import load_metadata, verify_metadata
+from whisper_lm_fusion.results import Segment, TranscriptionResult
 
 
 class Engine:

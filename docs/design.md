@@ -1,19 +1,19 @@
-# stt-wrapper Design
+# whisper-lm-fusion Design
 
 **Date**: 2026-06-09
 
-This document describes the design of `stt-wrapper`. The canonical project
+This document describes the design of `whisper-lm-fusion`. The canonical project
 contract lives in [`docs/SSOT.md`](SSOT.md); this file expands the wrapper
 responsibility boundary and backend/fusion rules.
 
-## 1. stt-wrapper란
+## 1. whisper-lm-fusion란
 
 faster-whisper 스타일의 **generic STT wrapper**다. CTranslate2 Whisper 백엔드를
 감싸고, 선택적으로 patched CTranslate2의 KenLM BPE fusion을 사용한다. long-form
 디코딩 파이프라인은 내부에 두고 파라미터만 밖으로 노출한다.
 
 ```
-caller / pipeline  ──call──▶  stt-wrapper  ──▶  backend
+caller / pipeline  ──call──▶  whisper-lm-fusion  ──▶  backend
                                audio + params -> text
 ```
 
@@ -157,8 +157,8 @@ build, domain reports.
   아니라 출력 텍스트 일치 + score 허용오차 기준)
 - KenLM 없는 빌드도 가능하도록 optional dependency로 다룬다.
 
-patched CTranslate2는 fork에 있다: `https://github.com/YuBeomGon/CTranslate2`
-(branch `feature/kenlm-bpe-fusion`). 정본 설치는 이 fork를 `WITH_KENLM=ON`으로 소스
+patched CTranslate2는 fork에 있다: [YuBeomGon/CTranslate2 @ `feature/kenlm-bpe-fusion`](https://github.com/YuBeomGon/CTranslate2/tree/feature/kenlm-bpe-fusion).
+정본 설치는 이 fork를 `WITH_KENLM=ON`으로 소스
 빌드 후 Python binding 설치(`pip install ./python`)다. `scripts/ct2_env.sh`는 이미
 빌드된 로컬 checkout을 가리키는 편의 스크립트일 뿐, 설치 경로가 아니다.
 

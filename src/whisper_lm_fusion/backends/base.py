@@ -7,7 +7,7 @@ is backend-agnostic; only the actual feature extraction and ``generate`` differ
 between CTranslate2, TensorRT-LLM, HuggingFace Whisper, OpenAI Whisper, etc.
 
 Implement a new backend by subclassing ``Backend`` and registering it (see
-``stt_wrapper.backends.register_backend``). Backends are constructed lazily by
+``whisper_lm_fusion.backends.register_backend``). Backends are constructed lazily by
 the factory so importing the wrapper never forces a heavy runtime import.
 """
 
@@ -19,7 +19,7 @@ from typing import Any
 
 import numpy as np
 
-from stt_wrapper.config import DecodeOptions, FusionOptions
+from whisper_lm_fusion.config import DecodeOptions, FusionOptions
 
 
 @dataclass

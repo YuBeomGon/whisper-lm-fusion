@@ -4,14 +4,14 @@ from __future__ import annotations
 
 import numpy as np
 
-from stt_wrapper._decode import (
+from whisper_lm_fusion._decode import (
     advance_seek,
     compression_ratio,
     decide_cut,
     frame_energy,
     select_hypothesis,
 )
-from stt_wrapper.config import DecodeOptions
+from whisper_lm_fusion.config import DecodeOptions
 
 
 def test_compression_ratio_flags_repetition():

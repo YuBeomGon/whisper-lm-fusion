@@ -8,9 +8,9 @@ from __future__ import annotations
 
 import numpy as np
 
-from stt_wrapper.backends.base import Backend, RawResult
-from stt_wrapper.config import LoadConfig
-from stt_wrapper.engine import Engine
+from whisper_lm_fusion.backends.base import Backend, RawResult
+from whisper_lm_fusion.config import LoadConfig
+from whisper_lm_fusion.engine import Engine
 
 # minimal Whisper-like special token map
 _SPECIAL = {

@@ -1,4 +1,4 @@
-"""Configuration schemas for stt-wrapper.
+"""Configuration schemas for whisper-lm-fusion.
 
 Two scopes, deliberately separated (see docs/implementation_plan.md §4):
 
@@ -21,7 +21,7 @@ class LoadConfig:
     """Init-time configuration. Set once when the engine boots."""
 
     model_path: Path
-    backend: str = "ct2"  # selects the execution provider (see stt_wrapper.backends)
+    backend: str = "ct2"  # selects the execution provider (see whisper_lm_fusion.backends)
     lm_path: Path | None = None  # patched-CT2 KenLM .binary; None => fusion unavailable
     device: str = "cuda"
     compute_type: str = "float16"

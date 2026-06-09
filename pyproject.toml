@@ -3,7 +3,7 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "stt-wrapper"
+name = "whisper-lm-fusion"
 version = "0.1.0"
 description = "Generic faster-whisper-style STT wrapper over (patched) CTranslate2 Whisper with optional KenLM BPE fusion"
 readme = "README.md"
@@ -26,14 +26,14 @@ ct2 = ["ctranslate2>=4.0"]
 dev = ["pytest", "ruff"]
 
 [project.urls]
-Homepage = "https://github.com/YuBeomGon/stt-wrapper"
-Documentation = "https://github.com/YuBeomGon/stt-wrapper/tree/main/docs"
+Homepage = "https://github.com/YuBeomGon/whisper-lm-fusion"
+Documentation = "https://github.com/YuBeomGon/whisper-lm-fusion/tree/main/docs"
 
 [tool.setuptools.packages.find]
 where = ["src"]
 
 [tool.setuptools.package-data]
-stt_wrapper = ["py.typed"]
+whisper_lm_fusion = ["py.typed"]
 
 [tool.ruff]
 line-length = 100

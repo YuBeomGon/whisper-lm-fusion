@@ -10,8 +10,8 @@ from typing import Any
 
 import numpy as np
 
-from stt_wrapper.backends.base import Backend, RawResult
-from stt_wrapper.config import DecodeOptions, FusionOptions, LoadConfig
+from whisper_lm_fusion.backends.base import Backend, RawResult
+from whisper_lm_fusion.config import DecodeOptions, FusionOptions, LoadConfig
 
 
 class Ct2Backend(Backend):

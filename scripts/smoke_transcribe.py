@@ -18,7 +18,7 @@ import librosa
 import numpy as np
 import soundfile as sf
 
-import stt_wrapper
+import whisper_lm_fusion
 
 TARGET_SR = 16000
 
@@ -40,7 +40,7 @@ def main() -> None:
     print(f"audio: {audio_path}")
     print(f"  duration: {dur:.1f}s  (orig sr={sr})")
 
-    engine = stt_wrapper.load(
+    engine = whisper_lm_fusion.load(
         model_dir,
         backend="ct2",
         device="cuda",

@@ -2,10 +2,10 @@
 
 **일자**: 2026-06-09
 
-이 문서는 `stt-wrapper`의 `transcribe()` 내부를 **어떤 디코딩 전략으로 채울지** 정리한 것이다.
+이 문서는 `whisper-lm-fusion`의 `transcribe()` 내부를 **어떤 디코딩 전략으로 채울지** 정리한 것이다.
 과거 `phase3_*` 자동 반복 실험에서 나온 검증된 아이디어를 wrapper 구현 관점으로 재배치했다.
 
-> 이 문서는 내부 연구/전략 노트다. 공개 API 계약은 [`docs/SSOT.md`](SSOT.md)를 따른다.
+> 이 문서는 내부 연구/전략 노트다. 공개 API 계약은 [`docs/SSOT.md`](../SSOT.md)를 따른다.
 > GitHub 공개 시에는 데이터셋명, 내부 run id, 공개 불가 수치를 sanitize하거나 별도 internal
 > 문서로 분리한다.
 

@@ -1,17 +1,17 @@
-# stt-wrapper SSOT
+# whisper-lm-fusion SSOT
 
 **Date**: 2026-06-09
 
-This document is the canonical project reference for `stt-wrapper`. Other docs
+This document is the canonical project reference for `whisper-lm-fusion`. Other docs
 should summarize and link here instead of duplicating policy.
 
 ## 1. Project Identity
 
-`stt-wrapper` is a generic, faster-whisper-style STT wrapper.
+`whisper-lm-fusion` is a generic, faster-whisper-style STT wrapper.
 
 It exposes two main calls:
 
-- `stt_wrapper.load(...)`: load a backend model once.
+- `whisper_lm_fusion.load(...)`: load a backend model once.
 - `engine.transcribe(audio, sr, ...)`: transcribe one already-decoded waveform.
 
 The wrapper owns long-form decoding mechanics such as windowing, silence-aware
@@ -50,9 +50,9 @@ The wrapper should not silently grow into a pipeline framework.
 ## 3. Current Public API
 
 ```python
-import stt_wrapper
+import whisper_lm_fusion
 
-engine = stt_wrapper.load(
+engine = whisper_lm_fusion.load(
     "path/to/ct2-whisper-model",
     backend="ct2",
     device="cuda",
@@ -101,7 +101,7 @@ kwargs:
 
 The patched CTranslate2 (KenLM BPE fusion) lives at the fork:
 
-- `https://github.com/YuBeomGon/CTranslate2` — branch `feature/kenlm-bpe-fusion`
+- [github.com/YuBeomGon/CTranslate2 @ `feature/kenlm-bpe-fusion`](https://github.com/YuBeomGon/CTranslate2/tree/feature/kenlm-bpe-fusion)
 
 It is not on PyPI; it is built from source with KenLM enabled (`WITH_KENLM=ON`),
 then the Python binding is installed (`pip install ./python`). This is the
@@ -164,10 +164,11 @@ Required before GitHub release:
 
 ## 7. Documentation Map
 
-- `README.md`: public quick start and install guide.
-- `docs/SSOT.md`: canonical project contract and release readiness.
-- `docs/design.md`: design details for the wrapper boundary and backend contract.
-- `docs/decoding_strategy.md`: internal decoding-strategy research notes.
-- `docs/implementation_plan.md`: implementation history and planning notes.
-- `docs/principles.md`: public-facing design principles and OSS checklist notes.
+- [`README.md`](../README.md): public quick start and install guide.
+- [`docs/SSOT.md`](SSOT.md): canonical project contract and release readiness.
+- [`docs/design.md`](design.md): design details for the wrapper boundary and backend contract.
+- [`docs/research/decoding_strategy.md`](research/decoding_strategy.md): internal decoding-strategy research notes.
+- [`docs/research/assets/`](research/assets/): raw experiment inventories backing the strategy notes.
+- [`docs/dev/implementation_plan.md`](dev/implementation_plan.md): implementation history and planning notes.
+- [`docs/archive/principles.md`](archive/principles.md): archived design-principles note (superseded by this document).
 

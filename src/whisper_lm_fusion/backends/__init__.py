@@ -2,11 +2,11 @@
 
 Select a backend by name in ``load(..., backend="ct2")``. Backends are referred
 to by ``"module:Class"`` and imported only when actually created, so adding a
-heavyweight backend never slows down ``import stt_wrapper``.
+heavyweight backend never slows down ``import whisper_lm_fusion``.
 
 Register your own::
 
-    from stt_wrapper.backends import register_backend
+    from whisper_lm_fusion.backends import register_backend
     register_backend("trtllm", "my_pkg.trtllm:TrtLlmBackend")
 """
 
@@ -14,11 +14,11 @@ from __future__ import annotations
 
 import importlib
 
-from stt_wrapper.backends.base import Backend, RawResult
-from stt_wrapper.config import LoadConfig
+from whisper_lm_fusion.backends.base import Backend, RawResult
+from whisper_lm_fusion.config import LoadConfig
 
 _REGISTRY: dict[str, str] = {
-    "ct2": "stt_wrapper.backends.ct2:Ct2Backend",
+    "ct2": "whisper_lm_fusion.backends.ct2:Ct2Backend",
     # future: "trtllm", "hf-whisper", "openai-whisper"
 }
 

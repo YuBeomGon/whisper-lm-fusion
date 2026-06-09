@@ -1,14 +1,14 @@
-# stt-wrapper 설계 원칙 & OSS 준비
+# whisper-lm-fusion 설계 원칙 & OSS 준비
 
 **일자**: 2026-06-09
 
-이 문서는 `stt-wrapper`를 오픈소스로 공개하기 위한 **핵심 원칙**만 정리한다.
-정본 계약과 공개 전 체크리스트는 [`docs/SSOT.md`](SSOT.md)를 따른다.
+이 문서는 `whisper-lm-fusion`를 오픈소스로 공개하기 위한 **핵심 원칙**만 정리한다.
+정본 계약과 공개 전 체크리스트는 [`docs/SSOT.md`](../SSOT.md)를 따른다.
 
 관련 문서:
 - `docs/SSOT.md` — 정본 계약 / OSS readiness
 - `docs/design.md` — interface / 책임 경계
-- `docs/decoding_strategy.md` — 내부 후보 전략 노트
+- `docs/research/decoding_strategy.md` — 내부 후보 전략 노트
 
 ---
 
@@ -45,7 +45,7 @@
 다른 사람이 막힘없이 쓰게 하는 최소 조건.
 
 - **빠른 시작 5줄** — README 맨 위, 복붙 가능한 `load` → `transcribe` 예제.
-- **설치 한 줄** — `pip install stt-wrapper`. CTranslate2 backend는 `[ct2]` extra로 분리.
+- **설치 한 줄** — `pip install whisper-lm-fusion`. CTranslate2 backend는 `[ct2]` extra로 분리.
 - **fusion 없이도 동작** — patched CT2/LM 없으면 일반 STT로 그냥 돌아가게. 첫 사용이 막히지 않도록.
 - **타입 힌트 + docstring** — 파라미터 단위·범위 명시(`alpha 0~1`). IDE 자동완성으로 문서 대체.
 - **친절한 에러** — tokenizer_hash mismatch 등 거부 시 "왜/어떻게 고치는지"까지. 조용한 실패 금지.
@@ -55,7 +55,7 @@
 
 ## 3. OSS 공개에 꼭 필요한 것
 
-공개 전 체크리스트는 [`docs/SSOT.md` §6](SSOT.md#6-open-source-readiness-checklist)에 둔다.
+공개 전 체크리스트는 [`docs/SSOT.md` §6](../SSOT.md#6-open-source-readiness-checklist)에 둔다.
 여기에는 원칙만 남긴다.
 
 - `README.md`는 설치, quick start, 현재 지원 API, 한계만 빠르게 보여준다.

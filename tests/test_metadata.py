@@ -6,7 +6,7 @@ import json
 
 import pytest
 
-from stt_wrapper.metadata import (
+from whisper_lm_fusion.metadata import (
     MetadataMismatchError,
     load_metadata,
     metadata_path_for,

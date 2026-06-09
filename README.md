@@ -1,4 +1,4 @@
-# stt-wrapper
+# whisper-lm-fusion
 
 A generic, faster-whisper-style **STT wrapper** over a (patched) CTranslate2 Whisper
 backend with **optional KenLM BPE shallow fusion**.
@@ -31,14 +31,15 @@ pipeline.
 ## Install
 
 ```bash
-pip install stt-wrapper           # core (backend-agnostic)
-pip install "stt-wrapper[ct2]"    # + CTranslate2 backend (plain STT)
+pip install whisper-lm-fusion           # core (backend-agnostic)
+pip install "whisper-lm-fusion[ct2]"    # + CTranslate2 backend (plain STT)
 ```
 
 ### KenLM fusion (patched CTranslate2)
 
 Fusion needs a CTranslate2 build with the KenLM BPE patch, which exposes the
-`lm_fusion_*` generate kwargs. It is **not** on PyPI — build it from the fork:
+`lm_fusion_*` generate kwargs. It is **not** on PyPI — build it from the fork
+[YuBeomGon/CTranslate2 @ `feature/kenlm-bpe-fusion`](https://github.com/YuBeomGon/CTranslate2/tree/feature/kenlm-bpe-fusion):
 
 ```bash
 git clone -b feature/kenlm-bpe-fusion \
@@ -59,8 +60,8 @@ The model execution layer is pluggable via a factory — the long-form decoding
 policy is backend-agnostic:
 
 ```python
-engine = stt_wrapper.load("path/to/model", backend="ct2")  # default
-stt_wrapper.available_backends()                           # -> ['ct2']
+engine = whisper_lm_fusion.load("path/to/model", backend="ct2")  # default
+whisper_lm_fusion.available_backends()                           # -> ['ct2']
 ```
 
 `ct2` (CTranslate2, with optional KenLM fusion) ships today. TensorRT-LLM /
@@ -72,9 +73,9 @@ changes needed.
 
 ```python
 import soundfile as sf
-import stt_wrapper
+import whisper_lm_fusion
 
-engine = stt_wrapper.load("path/to/ct2-whisper-model")   # boot once
+engine = whisper_lm_fusion.load("path/to/ct2-whisper-model")   # boot once
 audio, sr = sf.read("speech.wav")                        # mono float waveform
 text = engine.transcribe(audio, sr).text
 print(text)
@@ -83,7 +84,7 @@ print(text)
 ### With KenLM fusion (optional)
 
 ```python
-engine = stt_wrapper.load(
+engine = whisper_lm_fusion.load(
     "path/to/ct2-whisper-model",
     lm_path="path/to/domain.binary",   # pipeline-built KenLM artifact
     tokenizer_hash="<hash>",           # verified against artifact metadata
@@ -116,7 +117,7 @@ the library stays generic and free of heavy audio-decoding deps. See
 | output | `return_segments=False` |
 
 Defaults follow the verified backbone in
-[`docs/decoding_strategy.md`](docs/decoding_strategy.md).
+[`docs/research/decoding_strategy.md`](docs/research/decoding_strategy.md).
 
 `return_scores`, `return_nbest`, and `fusion_mode` exist in the internal config
 surface but are not yet documented as completed public behavior. See
@@ -127,15 +128,15 @@ surface but are not yet documented as completed public behavior. See
 **v1 (thin):** `load()` + `transcribe()`, long-form decoding, tokenizer-hash gate.
 
 **Out of scope (later):** batching, VAD, segment merge, word timestamps,
-diarization, and the advanced strategies catalogued in `docs/decoding_strategy.md`.
+diarization, and the advanced strategies catalogued in `docs/research/decoding_strategy.md`.
 
 ## Docs
 
 - [`docs/SSOT.md`](docs/SSOT.md) — canonical project contract & OSS readiness
 - [`docs/design.md`](docs/design.md) — interface & responsibility boundary
-- [`docs/principles.md`](docs/principles.md) — design principles
-- [`docs/implementation_plan.md`](docs/implementation_plan.md) — build plan
-- [`docs/decoding_strategy.md`](docs/decoding_strategy.md) — internal strategy catalog
+- [`docs/archive/principles.md`](docs/archive/principles.md) — design principles
+- [`docs/dev/implementation_plan.md`](docs/dev/implementation_plan.md) — build plan
+- [`docs/research/decoding_strategy.md`](docs/research/decoding_strategy.md) — internal strategy catalog
 
 ## License
 

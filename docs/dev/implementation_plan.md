@@ -1,9 +1,9 @@
-# stt-wrapper 구현 플랜
+# whisper-lm-fusion 구현 플랜
 
 **일자**: 2026-06-09
 
-이 문서는 `stt-wrapper` 1차 구현의 작업 플랜 기록이다. 현재 정본 계약은
-[`docs/SSOT.md`](SSOT.md)를 따른다.
+이 문서는 `whisper-lm-fusion` 1차 구현의 작업 플랜 기록이다. 현재 정본 계약은
+[`docs/SSOT.md`](../SSOT.md)를 따른다.
 
 > **기본 방침**: 검증된 long-form 디코딩 동작은 유지하되, 파일 구조와 API는
 > generic wrapper 원칙대로 설계한다.
@@ -12,8 +12,8 @@
 관련 문서:
 - `docs/SSOT.md` — 정본 계약 / 공개 전 체크리스트
 - `docs/design.md` — interface / 책임 경계
-- `docs/principles.md` — 설계 원칙 (transcribe + 파라미터 표면화)
-- `docs/decoding_strategy.md` — 내부 후보 전략 노트
+- `docs/archive/principles.md` — 설계 원칙 (transcribe + 파라미터 표면화)
+- `docs/research/decoding_strategy.md` — 내부 후보 전략 노트
 
 ---
 
@@ -58,7 +58,7 @@
 
 ```python
 # (B) serving init — 부팅 1회
-engine = stt_wrapper.load(
+engine = whisper_lm_fusion.load(
     model_path,
     lm_path=None,            # 없으면 fusion off, 일반 STT로 동작
     device="cuda",
@@ -94,7 +94,7 @@ result = engine.transcribe(
 
 외부 runner의 파일 분할을 따르지 않는다. wrapper에 맞게 새로 구성.
 
-- 처음엔 작게 시작 (단일 패키지 `src/stt_wrapper/`).
+- 처음엔 작게 시작 (단일 패키지 `src/whisper_lm_fusion/`).
 - 교체 가능 단위는 **함수 경계로** 분리하되, 파일 과분할은 피한다.
 - 현재: `engine.py`(load/transcribe), `config.py`(파라미터 스키마), `backends/`(CT2 load/generate), `_decode.py`(순수 디코딩 helper).
 

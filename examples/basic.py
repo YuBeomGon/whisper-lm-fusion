@@ -1,4 +1,4 @@
-"""Minimal stt-wrapper usage.
+"""Minimal whisper-lm-fusion usage.
 
 Run:  python examples/basic.py path/to/ct2-model path/to/speech.wav
 Requires a working CTranslate2 install and a CT2-converted Whisper model.
@@ -10,7 +10,7 @@ import sys
 
 import soundfile as sf
 
-import stt_wrapper
+import whisper_lm_fusion
 
 
 def main() -> None:
@@ -19,7 +19,7 @@ def main() -> None:
         raise SystemExit(1)
     model_path, audio_path = sys.argv[1], sys.argv[2]
 
-    engine = stt_wrapper.load(model_path, device="cuda", compute_type="float16")
+    engine = whisper_lm_fusion.load(model_path, device="cuda", compute_type="float16")
     audio, sr = sf.read(audio_path)
 
     result = engine.transcribe(audio, sr, return_segments=True)
