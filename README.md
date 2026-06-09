@@ -109,15 +109,19 @@ the library stays generic and free of heavy audio-decoding deps. See
 
 | group | params (defaults) |
 |---|---|
-| search | `beam_size=5`, `num_hypotheses=5`, `patience=2.0`, `sampling_temperature=0.0` |
+| search | `beam_size=5`, `num_hypotheses=5`, `patience=2.0`, `sampling_temperature=0.0`, `sampling_topk=1`, `length_penalty=1.0`, `repetition_penalty=1.0`, `no_repeat_ngram_size=0`, `max_length=448` |
 | gates | `logprob_threshold=-1.0`, `no_speech_threshold=0.6`, `compression_ratio_threshold=2.4` |
-| segmentation | `window_seconds=30.0`, `min_advance_seconds=20.0`, `silence_percentile=20.0`, `max_context_tokens=200` |
+| constraints | `suppress_blank=True`, `suppress_tokens=(-1,)`, `max_initial_timestamp_index=50` |
+| segmentation | `window_seconds=30.0`, `timestamp_resolution=0.02`, `min_advance_seconds=20.0`, `silence_percentile=20.0`, `max_context_tokens=200` |
 | language | `language="ko"`, `task="transcribe"` |
-| fusion | `lm_enabled=False`, `alpha=None`, `topk=None` (None → engine defaults) |
+| fusion | `lm_enabled=False`, `alpha=None`, `topk=None` (None → engine defaults), `fusion_debug=False` |
 | output | `return_segments=False` |
 
 Defaults follow the verified backbone in
-[`docs/research/decoding_strategy.md`](docs/research/decoding_strategy.md).
+[`docs/research/decoding_strategy.md`](docs/research/decoding_strategy.md). The
+`search` and `constraints` knobs map 1:1 to CTranslate2's `Whisper.generate`; other
+backends map or ignore them. `sampling_temperature` is a single value — a
+faster-whisper-style temperature fallback ladder is not yet implemented.
 
 `return_scores`, `return_nbest`, and `fusion_mode` exist in the internal config
 surface but are not yet documented as completed public behavior. See

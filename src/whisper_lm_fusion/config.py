@@ -77,11 +77,21 @@ class DecodeOptions:
     num_hypotheses: int = 5
     patience: float = 2.0
     sampling_temperature: float = 0.0
+    sampling_topk: int = 1  # >1 enables top-k sampling (with sampling_temperature)
+    length_penalty: float = 1.0
+    repetition_penalty: float = 1.0  # >1 penalizes repeats (anti-loop/hallucination)
+    no_repeat_ngram_size: int = 0  # 0 = disabled
+    max_length: int = 448  # max generated tokens per window
 
     # acceptance / fallback gates
     logprob_threshold: float = -1.0
     no_speech_threshold: float = 0.6
     compression_ratio_threshold: float = 2.4
+
+    # token constraints (CT2 generate pass-through; other backends map/ignore)
+    suppress_blank: bool = True  # suppress blank at sampling start
+    suppress_tokens: tuple[int, ...] = (-1,)  # -1 = model config's default symbol set
+    max_initial_timestamp_index: int = 50  # cap on the first predicted timestamp
 
     # segmentation / seek
     window_seconds: float = 30.0
