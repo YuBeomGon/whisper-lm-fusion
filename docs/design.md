@@ -136,6 +136,8 @@ wrapper의 입력은 **이미 디코딩된 파형**이다. 파일 디코딩·리
 
 ## 6. 내부 디코딩 구성
 
+현재 wrapper 코어는 faster-whisper 기본값 복제가 아니라 phase3 self-evolve에서 발견된 전략을 generic control surface로 압축한다. 주요 노브는 `beam_size`, `num_hypotheses`, `selection_policy`, `fallback_policy`, `temperature_fallback`, `language_policy`, `suppress_cjk_kana`, `align_tail_trim`, `context_policy`다. 자세한 sweep 표면은 [`docs/research/pipeline_control_surface.md`](research/pipeline_control_surface.md)를 따른다.
+
 현재 wrapper 코어는 아래 단위로 분리되어 있다.
 
 | 구성 | 역할 |

@@ -90,3 +90,42 @@ def test_advance_seek_default_full_window_when_no_timestamps():
     window = int(opts.window_seconds * sr)
     seek = advance_seek(0, window, window, window, [], 1000, sr, opts, silence_cut=False)
     assert seek == window  # full window advance
+
+
+def test_select_hypothesis_can_prefer_longer_within_margin():
+    opts = DecodeOptions(
+        selection_policy="longer_within_margin",
+        score_margin=0.15,
+        min_length_ratio_for_longer=1.2,
+    )
+    scores = [-0.20, -0.30]
+    seqs = [[1], [2, 3, 4]]
+    texts = {(1,): "짧음", (2, 3, 4): "더 긴 정상 문장"}
+    hyp = select_hypothesis(scores, seqs, lambda ids: texts[tuple(ids)], opts)
+    assert hyp.text == "더 긴 정상 문장"
+
+
+def test_no_speech_joint_gate_drops_bad_hypothesis():
+    opts = DecodeOptions(no_speech_threshold=0.5, no_speech_logprob_threshold=-0.8)
+    hyp = select_hypothesis(
+        [-1.2],
+        [[1, 2]],
+        lambda ids: "hallucinated text",
+        opts,
+        no_speech_prob=0.9,
+    )
+    assert hyp.text == ""
+    assert hyp.dropped_no_speech is True
+
+
+def test_token_mbr_chooses_medoid_candidate():
+    opts = DecodeOptions(selection_policy="token_mbr")
+    scores = [-0.1, -0.2, -0.3]
+    seqs = [[1, 2, 3], [1, 2, 4], [9, 9, 9]]
+    texts = {
+        (1, 2, 3): "가 나 다",
+        (1, 2, 4): "가 나 라",
+        (9, 9, 9): "전혀 다름",
+    }
+    hyp = select_hypothesis(scores, seqs, lambda ids: texts[tuple(ids)], opts)
+    assert hyp.token_ids in ([1, 2, 3], [1, 2, 4])

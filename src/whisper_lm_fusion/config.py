@@ -5,15 +5,27 @@ Two scopes, deliberately separated (see docs/implementation_plan.md §4):
 - ``LoadConfig``   : init-time, set once in ``load()`` (model, device, fusion defaults).
 - ``DecodeOptions``: request-time, passed to ``transcribe()`` (search, gates, segmentation).
 
-Request-time fusion fields (``alpha``/``topk``/``lm_enabled``) default to ``None`` and
-fall back to the engine's load-time defaults when not given, so a caller can toggle fusion
-per request without restating every value.
+The public surface is intentionally *not* a clone of faster-whisper.  The core
+knobs expose the self-evolve decoding strategies discovered in the phase3 runs:
+N-best selection, conditional fallback, language branching, script masking,
+confidence-gated context, and optional alignment hooks.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Literal
+
+LanguagePolicy = Literal["fixed", "per_window_confident", "dual_band"]
+FallbackPolicy = Literal["off", "gate_fail", "low_logprob", "degenerate", "always"]
+SelectionPolicy = Literal[
+    "axis_aware",
+    "logprob",
+    "longer_within_margin",
+    "token_mbr",
+]
+ContextPolicy = Literal["off", "always", "confidence_gated"]
 
 
 @dataclass(frozen=True)
@@ -66,13 +78,18 @@ class FusionOptions:
 
 @dataclass(frozen=True)
 class DecodeOptions:
-    """Request-time decoding options. Every field has a sane default."""
+    """Request-time decoding options.
+
+    Defaults are conservative and usable as a plain STT wrapper.  The extra knobs
+    are the compressed control surface of the self-evolve strategy taxonomy, so a
+    sweep runner can turn them on/off without editing engine code.
+    """
 
     # language / task
-    language: str = "ko"  # used to build the <|{language}|> prompt token
+    language: str = "ko"  # base prompt token: <|ko|>
     task: str = "transcribe"
 
-    # search (decoding_strategy defaults)
+    # search / N-best
     beam_size: int = 5
     num_hypotheses: int = 5
     patience: float = 2.0
@@ -83,22 +100,51 @@ class DecodeOptions:
     no_repeat_ngram_size: int = 0  # 0 = disabled
     max_length: int = 448  # max generated tokens per window
 
-    # acceptance / fallback gates
+    # hypothesis selection; maps multiple phase3 ideas into one sweepable surface
+    selection_policy: SelectionPolicy = "axis_aware"
+    prefer_longer_within_margin: bool = False
+    score_margin: float = 0.10
+    min_length_ratio_for_longer: float = 1.05
+
+    # acceptance / failure gates
     logprob_threshold: float = -1.0
     no_speech_threshold: float = 0.6
+    no_speech_logprob_threshold: float = -1.0
     compression_ratio_threshold: float = 2.4
 
-    # token constraints (CT2 generate pass-through; other backends map/ignore)
-    suppress_blank: bool = True  # suppress blank at sampling start
-    suppress_tokens: tuple[int, ...] = (-1,)  # -1 = model config's default symbol set
-    max_initial_timestamp_index: int = 50  # cap on the first predicted timestamp
+    # conditional fallback: retry only failed windows, not every window
+    fallback_policy: FallbackPolicy = "off"
+    temperature_fallback: tuple[float, ...] = ()
+    fallback_sampling_topk: int = 0  # 0 => use sampling_topk
 
-    # segmentation / seek
+    # language branch / prompt policy from phase3_013 family
+    language_policy: LanguagePolicy = "fixed"
+    language_override_prob: float = 0.7
+    dual_language_low_prob: float = 0.4
+    dual_language_high_prob: float = 0.7
+
+    # token constraints and script mask
+    suppress_blank: bool = True
+    suppress_tokens: tuple[int, ...] = (-1,)  # -1 = model config's default symbol set
+    suppress_cjk_kana: bool = True
+    max_initial_timestamp_index: int = 50
+
+    # segmentation / seek backbone
     window_seconds: float = 30.0
     timestamp_resolution: float = 0.02
     min_advance_seconds: float = 20.0
     silence_percentile: float = 20.0
+
+    # context carry policy; confidence_gated is the phase3 lesson, not always-on rolling text
     max_context_tokens: int = 200
+    context_policy: ContextPolicy = "confidence_gated"
+
+    # alignment hook.  Backends that cannot provide align posterior leave this as no-op.
+    align_tail_trim: bool = False
+    align_prob_floor: float = 0.3
+    align_min_run: int = 8
+    align_trigger_low_logprob: bool = True
+    align_trigger_degenerate: bool = True
 
     # fusion overrides (None => fall back to engine load-time default)
     lm_enabled: bool = False

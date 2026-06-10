@@ -122,3 +122,75 @@ def test_fusion_requires_supporting_backend():
         assert "does not support" in str(exc)
     else:
         raise AssertionError("expected ValueError for unsupported fusion")
+
+
+def test_temperature_fallback_adds_candidates_and_can_win():
+    class FallbackBackend(FakeBackend):
+        def generate(self, features, prompt, *, options, fusion):
+            self.calls.append({"prompt": prompt, "fusion": fusion, "temp": options.sampling_temperature})
+            if len(self.calls) == 1:
+                return RawResult(sequences_ids=[[10]], scores=[-1.5], no_speech_prob=0.0)
+            return RawResult(sequences_ids=[[20, 21]], scores=[-0.2], no_speech_prob=0.0)
+
+    backend = FallbackBackend([[[10]], [[20, 21]]])
+    eng = _engine(backend)
+    result = eng.transcribe(
+        np.ones(16000, dtype=np.float32),
+        16000,
+        fallback_policy="low_logprob",
+        temperature_fallback=(0.2,),
+        return_nbest=True,
+    )
+    assert result.text == "w20 w21"
+    assert len(backend.calls) == 2
+    assert backend.calls[1]["temp"] == 0.2
+    assert result.nbest is not None
+    assert result.nbest[0][1]["source"] == "temperature_fallback"
+
+
+def test_per_window_language_override_uses_detected_language():
+    from whisper_lm_fusion.backends.base import LanguageProb
+
+    class LanguageBackend(FakeBackend):
+        def detect_language(self, features):
+            return [LanguageProb("en", 0.95)]
+
+    backend = LanguageBackend([[[100]]])
+    eng = _engine(backend)
+    eng.transcribe(
+        np.ones(16000, dtype=np.float32),
+        16000,
+        language="ko",
+        language_policy="per_window_confident",
+        language_override_prob=0.7,
+    )
+    assert _SPECIAL["<|en|>"] in backend.calls[0]["prompt"]
+
+
+def test_runtime_cjk_kana_suppress_tokens_are_appended():
+    class ScriptTokenizer(FakeTokenizer):
+        def get_vocab(self):
+            return {"한": 10, "中": 11, "カ": 12, "A": 13}
+
+        def decode(self, ids, skip_special_tokens: bool = True):
+            table = {10: "한", 11: "中", 12: "カ", 13: "A"}
+            return "".join(table.get(i, f"w{i}") for i in ids)
+
+    class ScriptBackend(FakeBackend):
+        def __init__(self):
+            super().__init__([[[100]]])
+            self._tok = ScriptTokenizer()
+            self.seen_suppress = None
+
+        def generate(self, features, prompt, *, options, fusion):
+            self.seen_suppress = options.suppress_tokens
+            return super().generate(features, prompt, options=options, fusion=fusion)
+
+    backend = ScriptBackend()
+    eng = _engine(backend)
+    eng.transcribe(np.ones(16000, dtype=np.float32), 16000)
+    assert -1 in backend.seen_suppress
+    assert 11 in backend.seen_suppress
+    assert 12 in backend.seen_suppress
+    assert 10 not in backend.seen_suppress
+    assert 13 not in backend.seen_suppress
