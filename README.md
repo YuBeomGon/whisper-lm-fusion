@@ -30,10 +30,19 @@ pipeline.
 
 ## Install
 
+Not published on PyPI — install from source (the wrapper is pure Python, no
+compilation):
+
 ```bash
-pip install whisper-lm-fusion           # core (backend-agnostic)
-pip install "whisper-lm-fusion[ct2]"    # + CTranslate2 backend (plain STT)
+git clone https://github.com/YuBeomGon/whisper-lm-fusion.git
+cd whisper-lm-fusion
+pip install -e .            # core (backend-agnostic)
+pip install -e ".[ct2]"     # + CTranslate2 backend (plain STT, PyPI ctranslate2)
 ```
+
+`[ct2]` pulls the **stock PyPI `ctranslate2`** (no source build) and is all you
+need for plain STT plus the full decoding control surface. Only KenLM fusion
+needs a source-built fork — see below.
 
 ### KenLM fusion (patched CTranslate2)
 
@@ -50,9 +59,14 @@ cd CTranslate2
 pip install ./python
 ```
 
-Without this patched build the wrapper still runs as a plain Whisper STT
-(`lm_enabled=False`). For an already-built local checkout, `scripts/ct2_env.sh`
-points Python at it without installing.
+Build with `WITH_KENLM=ON` (one build supports **both** baseline and fusion: with
+no `lm_fusion_*` args it decodes exactly like baseline). Without this patched
+build the wrapper still runs as a plain Whisper STT (`lm_enabled=False`).
+
+> **Do not install both.** The PyPI `ctranslate2` and the source-built patched
+> `libctranslate2` are ABI-incompatible. For fusion, skip `[ct2]` and use the
+> fork only; `scripts/ct2_env.sh` points Python at an already-built local
+> checkout without installing.
 
 ## Backends
 

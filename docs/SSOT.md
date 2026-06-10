@@ -86,7 +86,10 @@ populated scores/N-best output until the implementation fills them.
 
 The default backend is `ct2`, implemented with CTranslate2 Whisper.
 
-Plain STT should work with a normal CTranslate2 installation. KenLM BPE shallow
+The wrapper itself is pure Python and is **not published on PyPI**; it is
+installed from source (`pip install -e .`, or `-e ".[ct2]"` to add the backend).
+Plain STT works with the **stock PyPI `ctranslate2`** (`[ct2]` extra) and gives
+the full decoding control surface without any source build. KenLM BPE shallow
 fusion requires a patched CTranslate2 build that exposes these Python generate
 kwargs:
 
@@ -107,6 +110,15 @@ It is not on PyPI; it is built from source with KenLM enabled (`WITH_KENLM=ON`),
 then the Python binding is installed (`pip install ./python`). This is the
 canonical install path for fusion. `scripts/ct2_env.sh` remains a convenience for
 pointing Python at an already-built local checkout, not the documented install.
+
+A single `WITH_KENLM=ON` build serves **both** baseline and fusion: with no
+`lm_fusion_model_path` / `lm_fusion_alpha <= 0` it decodes identically to
+baseline, so callers opt into fusion only by passing a model path and positive
+alpha. `WITH_KENLM=OFF` builds raise a runtime error on a fusion request.
+
+The stock PyPI `ctranslate2` and the source-built patched `libctranslate2` are
+**ABI-incompatible — do not install both**. For fusion, skip the `[ct2]` extra
+and use the fork only.
 
 ## 5. KenLM Artifact Contract
 
