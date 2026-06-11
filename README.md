@@ -154,11 +154,20 @@ diarization, and the advanced strategies catalogued in `docs/research/decoding_s
 
 ## Docs
 
+**User / operations** (`docs/guide/`):
+
+- [`docs/guide/pipeline.md`](docs/guide/pipeline.md) — how `transcribe()` decodes, step by step
+- [`docs/guide/parameters.md`](docs/guide/parameters.md) — full `load()` / `DecodeOptions` reference
+- [`docs/guide/fusion.md`](docs/guide/fusion.md) — KenLM LM fusion operations guide
+- runnable [`examples/`](examples/): `plain_stt.py`, `with_fusion.py`, `tune_policies.py`, `segments.py`
+
+**Contract / research**:
+
 - [`docs/SSOT.md`](docs/SSOT.md) — canonical project contract & OSS readiness
 - [`docs/design.md`](docs/design.md) — interface & responsibility boundary
-- [`docs/archive/principles.md`](docs/archive/principles.md) — design principles
-- [`docs/dev/implementation_plan.md`](docs/dev/implementation_plan.md) — build plan
+- [`docs/research/pipeline_control_surface.md`](docs/research/pipeline_control_surface.md) — sweepable control surface
 - [`docs/research/decoding_strategy.md`](docs/research/decoding_strategy.md) — internal strategy catalog
+- [`docs/dev/implementation_plan.md`](docs/dev/implementation_plan.md) — build plan · [`docs/archive/principles.md`](docs/archive/principles.md) — design principles
 
 ## License
 
