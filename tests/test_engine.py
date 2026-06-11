@@ -89,6 +89,26 @@ def test_fusion_off_passes_empty_fusion_kwargs():
     assert backend.calls[0]["fusion"].to_generate_kwargs() == {}
 
 
+def test_fusion_on_emits_lm_fusion_kwargs():
+    backend = FakeBackend([[[100]]])
+    cfg = LoadConfig(
+        model_path="unused", lm_path="lm.binary", verify_metadata=False, topk_default=50
+    )
+    eng = Engine(backend, cfg)
+    eng.transcribe(
+        np.ones(16000, dtype=np.float32), 16000, lm_enabled=True, alpha=0.2
+    )
+    kwargs = backend.calls[0]["fusion"].to_generate_kwargs()
+    assert kwargs == {
+        "lm_fusion_model_path": "lm.binary",
+        "lm_fusion_alpha": 0.2,
+        "lm_fusion_asr_topk": 50,
+        "lm_fusion_debug": False,
+    }
+    # lm_fusion_beta must never be passed (SSOT §4)
+    assert "lm_fusion_beta" not in kwargs
+
+
 def test_language_override_changes_prompt_token():
     backend = FakeBackend([[[100]]])
     eng = _engine(backend)

@@ -128,14 +128,18 @@ the library stays generic and free of heavy audio-decoding deps. See
 | constraints | `suppress_blank=True`, `suppress_tokens=(-1,)`, `max_initial_timestamp_index=50` |
 | segmentation | `window_seconds=30.0`, `timestamp_resolution=0.02`, `min_advance_seconds=20.0`, `silence_percentile=20.0`, `max_context_tokens=200` |
 | language | `language="ko"`, `task="transcribe"` |
+| policy | `selection_policy="axis_aware"`, `fallback_policy="off"`, `language_policy="fixed"`, `context_policy="confidence_gated"` — the self-evolve control surface; each switches internal logic. Full values/sub-knobs in [`pipeline_control_surface.md`](docs/research/pipeline_control_surface.md) |
 | fusion | `lm_enabled=False`, `alpha=None`, `topk=None` (None → engine defaults), `fusion_debug=False` |
 | output | `return_segments=False` |
 
 Defaults follow the verified backbone in
 [`docs/research/decoding_strategy.md`](docs/research/decoding_strategy.md). The
 `search` and `constraints` knobs map 1:1 to CTranslate2's `Whisper.generate`; other
-backends map or ignore them. `sampling_temperature` is a single value — a
-faster-whisper-style temperature fallback ladder is not yet implemented.
+backends map or ignore them. `sampling_temperature` is a single deterministic
+value; a faster-whisper-style temperature fallback ladder is implemented via
+`fallback_policy` + `temperature_fallback`, which re-decodes only gate-failing
+windows (see the `policy` row and
+[`docs/research/pipeline_control_surface.md`](docs/research/pipeline_control_surface.md)).
 
 `return_scores`, `return_nbest`, and `fusion_mode` exist in the internal config
 surface but are not yet documented as completed public behavior. See
